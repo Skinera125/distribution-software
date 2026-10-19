@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Distribution Software</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 380px;
+        }
+        h1 { text-align: center; color: #2c3e50; margin-bottom: 10px; font-size: 24px; }
+        .subtitle { text-align: center; color: #7f8c8d; margin-bottom: 30px; font-size: 14px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+        input:focus { outline: none; border-color: #667eea; }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover { background: #5568d3; }
+        .error {
+            background: #fee;
+            color: #c0392b;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>📦 Distribution Software</h1>
+        <p class="subtitle">Apne account mein login karein</p>
+        
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login Karein</button>
+        </form>
+        
+        <div class="info">
+            <b>Default Login:</b><br>
+            Username: <b>admin</b><br>
+            Password: <b>admin123</b>
+        </div>
+    </div>
+</body>
+</html>
