@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>INVOICE - SkinEra Life Sciences</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Arial', sans-serif; background: #f4f6f9; padding: 20px; }
+        
+        .invoice-box {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            border: 1px solid #ccc;
+        }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 28px; color: #000; margin-bottom: 5px; font-weight: bold; }
+        .header p { font-size: 14px; color: #333; margin-bottom: 3px; }
+        
+        .invoice-title { text-align: center; font-size: 24px; font-weight: bold; margin: 20px 0; letter-spacing: 2px; }
+        
+        /* Info Section */
+        .info-section { display: flex; justify-content: space-between; margin-bottom: 25px; font-size: 14px; }
+        .info-left, .info-right { width: 48%; }
+        .info-section p { margin-bottom: 6px; }
+        .info-section b { display: inline-block; width: 110px; font-weight: bold; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 13px; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+        th { background: #e0e0e0; font-weight: bold; text-align: center; }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+
+        /* Totals */
+        .total-section { width: 40%; float: right; font-size: 14px; }
+        .total-section table { border: none; margin-bottom: 0; }
+        .total-section th, .total-section td { border: none; padding: 6px; }
+        .total-section tr:last-child { font-weight: bold; font-size: 16px; border-top: 2px solid #000; }
+
+        /* Buttons */
+        .actions { text-align: center; margin-top: 50px; }
+        .print-btn {
+            padding: 12px 25px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            border: none;
+            font-size: 15px;
+        }
+        .print-btn:hover { background: #2980b9; }
+        .back-btn { display: inline-block; margin-left: 20px; color: #555; text-decoration: none; font-weight: bold; }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .invoice-box { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+            .actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <!-- Header -->
+        <div class="header">
+            <h1>SkinEra Life Sciences (Pvt) Ltd.</h1>
+            <p>Kashif Plaza, G8 Markaz, Islamabad</p>
+            <p>Email: info@skinerallifesciences.com</p>
+        </div>
+
+        <div class="invoice-title">INVOICE</div>
+
+        <!-- Info -->
+        <div class="info-section">
+            <div class="info-left">
+                <p><b>Customer ID:</b> {{ customer_id }}</p>
+                <p><b>Name:</b> {{ customer_name }}</p>
+                <p><b>Address:</b> {{ customer_address }}</p>
+                <p><b>Area:</b> {{ customer_address }}</p>
+                <p><b>Remarks:</b> </p>
+            </div>
+            <div class="info-right">
+                <p><b>Invoice No:</b> {{ sale_id }}</p>
+                <p><b>Date:</b> {{ date }}</p>
+                <p><b>Salesman:</b> Admin</p>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>P's</th>
+                    <th>Batch</th>
+                    <th>Expiry</th>
+                    <th>Qty</th>
+                    <th>Bon</th>
+                    <th>Trade Price</th>
+                    <th>Gross Amount</th>
+                    <th>Percentage%</th>
+                    <th>Discount</th>
+                    <th>Net Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item['product_name'] }}</td>
+                    <td class="text-center">-</td>
+                    <td class="text-center">{{ item['batch_no'] if item['batch_no'] else '-' }}</td>
+                    <td class="text-center">{{ item['expiry_date'] if item['expiry_date'] else '-' }}</td>
+                    <td class="text-center">{{ item['qty'] }}</td>
+                    <td class="text-center">{{ item['bonus_qty'] }}</td>
+                    <td class="text-right">{{ item['price'] }}</td>
+                    <td class="text-right">{{ item['qty'] * item['price'] }}</td>
+                    <td class="text-center">-</td>
+                    <td class="text-right">-</td>
+                    <td class="text-right">{{ item['total'] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="11" class="text-center">No items found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Totals -->
+        <div class="total-section">
+            <table>
+                <tr>
+                    <td>Gross Total:</td>
+                    <td class="text-right">Rs {{ total_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Paid Amount:</td>
+                    <td class="text-right">Rs {{ paid_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Balance (Udhar):</td>
+                    <td class="text-right">Rs {{ total_amount - paid_amount }}</td>
+                </tr>
+            </table>
+        </div>
+        <div style="clear: both;"></div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button onclick="window.print()" class="print-btn">🖨️ Print Invoice</button>
+            <a href="/sales" class="back-btn">← Back to Sales</a>
+        </div>
+    </div>
+</body>
+</html>
