@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Invoice - SkinEra Life Sciences</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; }
+        .header { background: #2c3e50; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header a { color: white; text-decoration: none; font-weight: bold; }
+        .container { padding: 20px; max-width: 1200px; margin: auto; }
+        
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        
+        .form-row { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 15px; }
+        .form-group { flex: 1; min-width: 200px; }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #34495e; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        
+        button { padding: 10px 20px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #219150; }
+        .btn-blue { background: #3498db; }
+        .btn-blue:hover { background: #2980b9; }
+        
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #34495e; color: white; }
+        .text-right { text-align: right; }
+        
+        /* Invoice Total Box */
+        .total-box { width: 350px; float: right; background: #ecf0f1; padding: 15px; border-radius: 8px; margin-top: 20px; }
+        .total-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 15px; }
+        .total-row.grand { font-weight: bold; font-size: 20px; border-top: 2px solid #bdc3c7; padding-top: 10px; color: #e74c3c; }
+        .clear { clear: both; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 SkinEra Life Sciences</h1>
+        <a href="/sales">← Wapas Sales List</a>
+    </div>
+
+    <div class="container">
+        <form id="invoiceForm" action="/save_new_sale" method="POST">
+            <div class="card">
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Customer Details</h3>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Select Existing Customer (Search)</label>
+                        <input type="text" list="customerList" id="customerSearch" placeholder="Type customer name..." required>
+                        <datalist id="customerList">
+                            {% for customer in customers %}
+                            <option data-id="{{ customer['id'] }}" data-name="{{ customer['name'] }}" value="{{ customer['name'] }}">
+                            {% endfor %}
+                        </datalist>
+                        <input type="hidden" name="customer_id" id="customer_id_hidden">
+                    </div>
+                    <div class="form-group">
+                        <label>Ya Naya Customer Banayein</label>
+                        <a href="/customers" target="_blank" class="btn-blue" style="display: inline-block; padding: 10px; text-decoration: none; color: white; border-radius: 5px;">+ New Customer Add Karein</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Add Products to Invoice</h3>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 2;">
+                        <label>Product Search</label>
+                        <select id="productSelect">
+                            <option value="">Product dhoondein...</option>
+                            {% for product in products %}
+                            <option value="{{ product['id'] }}" data-name="{{ product['name'] }}" data-price="{{ product['sale_price'] }}" data-batch="{{ product['batch_no'] }}" data-expiry="{{ product['expiry_date'] }}">{{ product['name'] }} (Stock: {{ product['stock_qty'] }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Qty</label><input type="number" id="qty" value="1" min="1"></div>
+                    <div class="form-group"><label>TP (Price)</label><input type="number" id="price" readonly></div>
+                    <div class="form-group"><label>Discount %</label><input type="number" id="discount" value="0" min="0"></div>
+                    <div class="form-group"><label>Bonus</label><input type="number" id="bonus" value="0" min="0"></div>
+                    <div class="form-group" style="display: flex; align-items: flex-end;">
+                        <button type="button" onclick="addProductToList()" class="btn-blue">Add Item</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-bottom: 15px; color: #2c3e50;">Invoice Items</h3>
+                <table id="itemsTable">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Batch</th>
+                            <th>Expiry</th>
+                            <th>Qty</th>
+                            <th>Bonus</th>
+                            <th>TP</th>
+                            <th>Disc %</th>
+                            <th>Net Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Items yahan JS se aayenge -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="total-box">
+                <div class="total-row"><span>Gross Total:</span> <span id="grossTotal">Rs 0</span></div>
+                <div class="total-row"><span>Total Discount:</span> <span id="totalDiscount">Rs 0</span></div>
+                <div class="total-row"><span>Paid Amount (Rs):</span> <input type="number" name="paid_amount" id="paid_amount" value="0" style="width: 100px; padding: 5px;"></div>
+                <div class="total-row grand"><span>Net Total:</span> <span id="netTotal">Rs 0</span></div>
+                <input type="hidden" name="total_amount" id="total_amount_hidden">
+                <input type="hidden" name="items_json" id="items_json_hidden">
+                <button type="submit" style="width: 100%; margin-top: 10px; background: #e67e22;">Save & Generate Invoice</button>
+            </div>
+            <div class="clear"></div>
+        </form>
+    </div>
+
+    <script>
+        // Customer Select karne par ID lena
+        document.getElementById('customerSearch').addEventListener('input', function() {
+            let val = this.value;
+            let options = document.querySelectorAll('#customerList option');
+            options.forEach(opt => {
+                if(opt.value === val) {
+                    document.getElementById('customer_id_hidden').value = opt.getAttribute('data-id');
+                }
+            });
+        });
+
+        // Product select karne par price auto-fill
+        document.getElementById('productSelect').addEventListener('change', function() {
+            let selected = this.options[this.selectedIndex];
+            document.getElementById('price').value = selected.getAttribute('data-price') || 0;
+        });
+
+        let items = [];
+        let rowId = 0;
+
+        function addProductToList() {
+            let select = document.getElementById('productSelect');
+            let productId = select.value;
+            if(!productId) { alert('Pehle product select karein!'); return; }
+            
+            let productName = select.options[select.selectedIndex].getAttribute('data-name');
+            let batch = select.options[select.selectedIndex].getAttribute('data-batch') || '-';
+            let expiry = select.options[select.selectedIndex].getAttribute('data-expiry') || '-';
+            
+            let qty = parseFloat(document.getElementById('qty').value);
+            let price = parseFloat(document.getElementById('price').value);
+            let discount = parseFloat(document.getElementById('discount').value);
+            let bonus = parseFloat(document.getElementById('bonus').value);
+
+            let gross = qty * price;
+            let discAmount = gross * (discount / 100);
+            let netAmount = gross - discAmount;
+
+            let item = { id: rowId, productId, productName, batch, expiry, qty, bonus, price, discount, netAmount };
+            items.push(item);
+
+            renderTable();
+            rowId++;
+            
+            // Reset inputs
+            document.getElementById('productSelect').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('qty').value = 1;
+            document.getElementById('discount').value = 0;
+            document.getElementById('bonus').value = 0;
+        }
+
+        function removeItem(id) {
+            items = items.filter(item => item.id !== id);
+            renderTable();
+        }
+
+        function renderTable() {
+            let tbody = document.querySelector('#itemsTable tbody');
+            tbody.innerHTML = '';
+            let grossTotal = 0;
+            let totalDiscount = 0;
+            let netTotal = 0;
+
+            items.forEach(item => {
+                let row = `<tr>
+                    <td>${item.productName}</td>
+                    <td>${item.batch}</td>
+                    <td>${item.expiry}</td>
+                    <td>${item.qty}</td>
+                    <td>${item.bonus}</td>
+                    <td>Rs ${item.price}</td>
+                    <td>${item.discount}%</td>
+                    <td>Rs ${item.netAmount.toFixed(2)}</td>
+                    <td><button type="button" onclick="removeItem(${item.id})" style="background: red; padding: 5px;">X</button></td>
+                </tr>`;
+                tbody.innerHTML += row;
+
+                let gross = item.qty * item.price;
+                grossTotal += gross;
+                totalDiscount += (gross * (item.discount / 100));
+                netTotal += item.netAmount;
+            });
+
+            document.getElementById('grossTotal').innerText = 'Rs ' + grossTotal.toFixed(2);
+            document.getElementById('totalDiscount').innerText = 'Rs ' + totalDiscount.toFixed(2);
+            document.getElementById('netTotal').innerText = 'Rs ' + netTotal.toFixed(2);
+            document.getElementById('total_amount_hidden').value = netTotal;
+        }
+
+        // Form submit hone se pehle items ko JSON mein badalna
+        document.getElementById('invoiceForm').addEventListener('submit', function(e) {
+            if(items.length === 0) {
+                e.preventDefault();
+                alert('Bhai, kam az kam ek item to add karein!');
+                return;
+            }
+            document.getElementById('items_json_hidden').value = JSON.stringify(items);
+        });
+    </script>
+</body>
+</html>
