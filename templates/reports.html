@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reports - Distribution Software</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; }
+        .header { background: #2c3e50; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 20px; }
+        .header a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; }
+        .container { padding: 30px; max-width: 1000px; margin: auto; }
+        .back-btn { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #3498db; font-weight: bold; }
+        
+        .title { text-align: center; color: #2c3e50; margin-bottom: 30px; font-size: 28px; }
+        
+        /* Report Cards */
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        
+        .report-card { background: white; padding: 30px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; border-top: 5px solid #3498db; }
+        .report-card.green { border-top-color: #27ae60; }
+        .report-card.orange { border-top-color: #e67e22; }
+        .report-card.red { border-top-color: #e74c3c; }
+        
+        .report-card .icon { font-size: 45px; margin-bottom: 15px; }
+        .report-card h3 { font-size: 15px; color: #7f8c8d; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .report-card p { font-size: 32px; font-weight: bold; color: #2c3e50; }
+        
+        .footer-note { text-align: center; margin-top: 40px; color: #95a5a6; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 Distribution Software</h1>
+        <div><span>👤 {{ username }}</span><a href="/logout">Logout</a></div>
+    </div>
+    
+    <div class="container">
+        <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+        
+        <h1 class="title">Business Reports 📊</h1>
+        
+        <div class="report-grid">
+            <!-- Total Sales -->
+            <div class="report-card green">
+                <div class="icon">💰</div>
+                <h3>Total Sales (All Time)</h3>
+                <p>Rs {{ total_sales }}</p>
+            </div>
+
+            <!-- Total Profit -->
+            <div class="report-card">
+                <div class="icon">📈</div>
+                <h3>Total Profit</h3>
+                <p>Rs {{ total_profit }}</p>
+            </div>
+
+            <!-- Total Stock Value -->
+            <div class="report-card orange">
+                <div class="icon">📦</div>
+                <h3>Stock Value (Inventory)</h3>
+                <p>Rs {{ stock_value }}</p>
+            </div>
+
+            <!-- Total Receivables -->
+            <div class="report-card red">
+                <div class="icon">📒</div>
+                <h3>Total Receivables (Udhar)</h3>
+                <p>Rs {{ total_receivables }}</p>
+            </div>
+        </div>
+
+        <p class="footer-note">* This report calculates total sales, profit, and current stock value based on your database.</p>
+    </div>
+</body>
+</html>
