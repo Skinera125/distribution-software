@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receive Payment - Distribution Software</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; }
+        .header { background: #2c3e50; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .header a { color: white; text-decoration: none; margin-left: 20px; font-weight: bold; }
+        .container { padding: 30px; max-width: 600px; margin: auto; }
+        .back-btn { display: inline-block; margin-bottom: 20px; text-decoration: none; color: #3498db; font-weight: bold; }
+        
+        .form-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+        .form-box h2 { margin-bottom: 20px; color: #2c3e50; font-size: 20px; text-align: center; }
+        
+        .customer-info { background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #e74c3c; }
+        .customer-info h3 { margin-bottom: 5px; color: #2c3e50; }
+        .customer-info p { color: #e74c3c; font-weight: bold; font-size: 18px; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #34495e; font-size: 14px; }
+        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; }
+        input:focus { outline: none; border-color: #27ae60; }
+        
+        button { width: 100%; padding: 14px; background: #27ae60; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 10px; }
+        button:hover { background: #219150; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📦 Distribution Software</h1>
+        <div><span>👤 {{ username }}</span><a href="/logout">Logout</a></div>
+    </div>
+    
+    <div class="container">
+        <a href="/customer_ledger/{{ customer['id'] }}" class="back-btn">← Back to Ledger</a>
+        
+        <div class="form-box">
+            <h2>Receive Payment</h2>
+            
+            <div class="customer-info">
+                <h3>Customer: {{ customer['name'] }}</h3>
+                <p>Current Balance: Rs {{ customer['opening_balance'] }}</p>
+            </div>
+
+            <form method="POST" action="/receive_payment/{{ customer['id'] }}">
+                <div class="form-group">
+                    <label>Amount Received (Rs) *</label>
+                    <input type="number" name="amount" placeholder="e.g. 5000" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Note / Remarks (Optional)</label>
+                    <input type="text" name="note" placeholder="e.g. Cash received by hand">
+                </div>
+                
+                <button type="submit">Receive Payment</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
